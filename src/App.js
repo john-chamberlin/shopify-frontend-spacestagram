@@ -1,25 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react'
+import { DateRangePicker } from 'rsuite'
+import { subDays } from 'date-fns'
+import Cards from './components/cards'
+import 'rsuite/dist/styles/rsuite-default.css'
+import './App.css'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const { afterToday, allowedMaxDays, combine } = DateRangePicker
+
+const defaultState = {
+	value: [subDays(new Date(), 6), new Date()]
 }
 
-export default App;
+function App() {
+	const [dates, setDates] = useState({
+		value: [subDays(new Date(), 6), new Date()]
+	})
+
+	return (
+		<>
+			<div className='App-header'>
+				<h1>Spacestagram </h1>
+				<small>
+					Brought to you by NASA's Astronomy Photo of the day (APOD) API
+				</small>
+				<DateRangePicker
+					value={dates.value}
+					onClean={() => {
+						setDates(defaultState)
+					}}
+					onChange={value => {
+						setDates({ value })
+					}}
+					disabledDate={combine(allowedMaxDays(14), afterToday())}
+				/>
+			</div>
+			<div className='cards-container'>
+				<Cards dates={dates.value} />
+			</div>
+		</>
+	)
+}
+
+export default App
